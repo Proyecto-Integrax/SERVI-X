@@ -78,7 +78,7 @@ SERVI-X administra los casos de atención y garantiza la trazabilidad de cada so
 
 ## Diagramas
 
-_Pendiente: exportar desde draw.io (PNG/SVG + XML fuente) y añadir aquí._
+Diagramas del microproyecto (draw.io): https://app.diagrams.net/#G13G64zWnO_kw7gQsZ_JmhrctSc4yiniCC#%7B%22pageId%22%3A%22GD0VqGYAA0lRg_qeHXL_%22%7D
 
 ## Flujo de trabajo Git
 
