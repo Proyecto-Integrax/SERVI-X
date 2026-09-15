@@ -36,25 +36,6 @@ La empresa necesita un sistema que permita gestionar de manera organizada las so
 
 SERVI-X administra los casos de atención y garantiza la trazabilidad de cada solicitud, consumiendo/exponiendo servicios hacia los demás microproyectos de INTEGRAX (en particular CRM-X para clientes, SALES-X para pedidos y LOGISTI-X para despachos).
 
-Especificación completa: [Spec Funcional](Docs/Spec-Funcional.md) · [Spec Técnico](Docs/Spec-Tecnico.md)
-
-## Actores y roles
-
-| Actor | Alcance |
-|---|---|
-| Cliente | Crea solicitudes y consulta únicamente sus propios casos y respuestas |
-| Agente de Servicio | Recibe, clasifica, investiga y responde los casos asignados |
-| Administrador | Funciones de Agente + gestión de perfiles operativos (Agentes) |
-
-## Reglas de negocio centrales
-
-| ID | Regla |
-|---|---|
-| RN-01 | Identidad distribuida: todo identificador (caso, usuario, historial) es UUID, nunca secuencial |
-| RN-02 | Aislamiento operativo: SERVI-X tiene su propia base de datos y sigue funcionando si otros módulos fallan |
-| RN-03 | Un caso no puede cerrarse sin una respuesta oficial previa registrada |
-| RN-04 | Todo caso nuevo genera automáticamente su primer registro de auditoría |
-
 ## Requerimientos funcionales
 
 | ID | Descripción |
@@ -95,20 +76,6 @@ Especificación completa: [Spec Funcional](Docs/Spec-Funcional.md) · [Spec Téc
 | 4 | 11-sep-2026 | Implementación y pruebas del núcleo funcional | Versión funcional + pruebas iniciales |
 | 5 | 18-sep-2026 | Finalización, documentación y demostración | Microproyecto terminado, API documentada |
 
-## Arquitectura y stack técnico
-
-Arquitectura Orientada a Servicios (SOA): SERVI-X opera como servicio independiente con base de datos propia (no comparte tablas con otros módulos) y se comunica con ellos vía HTTP/REST síncrono, con timeouts y circuit breaker para tolerar fallas externas.
-
-| Capa | Tecnología |
-|---|---|
-| Backend / API | Node.js 20+ con TypeScript, Express.js |
-| Base de datos | PostgreSQL 15+ |
-| ORM | Prisma |
-| Frontend | React (Vite) |
-| Contenedores | Docker / docker-compose |
-
-**Convenciones:** PKs/FKs como `UUID v4` · columnas en `snake_case` · payloads JSON en `camelCase` · timestamps en UTC (`TIMESTAMPTZ`) · contraseñas con `bcrypt` (salt rounds 10) · autenticación JWT con rol embebido.
-
 ## Diagramas
 
 Diagramas del microproyecto (draw.io): https://app.diagrams.net/#G13G64zWnO_kw7gQsZ_JmhrctSc4yiniCC#%7B%22pageId%22%3A%22GD0VqGYAA0lRg_qeHXL_%22%7D
@@ -123,4 +90,4 @@ Flujo: `feature/*` → PR/merge a `dev` (requiere aprobación) → merge a `main
 
 ## Estado actual
 
-Semana 3 — arquitectura, modelo de datos y contratos de API definidos (ver `Docs/`). Implementación en curso siguiendo el plan de ramas por feature.
+Semana 1 — análisis y documentación inicial.
