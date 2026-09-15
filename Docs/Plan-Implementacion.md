@@ -136,7 +136,21 @@ Módulo `modules/integraciones/`:
 - `portals/cliente/`: formulario de radicación (tipoSolicitud + descripción + pedidoId opcional), listado propio, detalle con respuesta.
 - `portals/agente/`: dashboard (conteo abiertos/cerrados), grilla con filtros (clienteId, estado, tipo), vista de detalle con acciones (asignar, cambiar estado, responder, cerrar — deshabilitadas si el caso está cerrado).
 - `admin/`: alta de responsables.
-- Cliente API único en `api/http.ts` (axios con interceptor JWT).
+- `api/`: capa de acceso a datos con **dos implementaciones intercambiables** detrás de la misma interfaz (`ServiXApi`):
+  - `api/mock/`: datos en memoria/fixtures + `localStorage` (fase de mockups, sin backend).
+  - `api/http.ts`: axios real contra `/api/v1` (fase de implementación, con interceptor JWT).
+  - Un flag de entorno (`VITE_USE_MOCK_API`) decide cuál se inyecta; los componentes solo conocen la interfaz, nunca la implementación concreta.
+
+## Fase 0 — Mockups interactivos (antes de la implementación real)
+
+Antes de tocar backend, se construye el frontend completo y **navegable** con datos simulados, para validar con el usuario final los flujos de la Spec Funcional (§4.1–4.5) sin esperar a tener API/DB reales.
+
+- Alcance: las 3 pantallas de cada portal ya descritas arriba (Cliente, Agente, Admin), con navegación real (`react-router`), estados de UI reales (loading, error, deshabilitado si el caso está cerrado) y las reglas de negocio simuladas en el mock (ej. RN-03: el mock también rechaza el cierre sin respuesta previa, para que el flujo se sienta idéntico al final).
+- `api/mock/fixtures.ts`: casos, responsables e historial de ejemplo cubriendo cada `tipoSolicitud` y `estadoAtencion`.
+- `api/mock/mockApi.ts`: implementa `ServiXApi` operando en memoria (persistida en `localStorage` para sobrevivir refresh), incluyendo la validación RN-03 y la inserción automática en historial (RN-04).
+- Sin JWT real: login mock que solo valida contra la lista de `responsable` fixture y guarda el rol en sesión.
+- Entregable de esta fase: demo clickeable end-to-end (crear PQRS como Cliente → login Agente → asignar → cambiar estado → responder → cerrar → Cliente ve la respuesta) corriendo con `npm run dev`, sin Docker ni Postgres.
+- Al pasar a la Fase 1 (implementación real), solo se escribe `api/http.ts` y se cambia el flag — no se reescribe UI.
 
 ## Docker
 
@@ -145,7 +159,13 @@ Módulo `modules/integraciones/`:
 
 ## Plan de ramas (siguiendo el flujo acordado)
 
-Cada punto es una rama `feature/*` creada desde `dev`, con merge a `dev` y luego a `main` solo tras aprobación explícita:
+Cada punto es una rama `feature/*` creada desde `dev`, con merge a `dev` y luego a `main` solo tras aprobación explícita. **Fase 0 primero (mockups), Fase 1 después (implementación real):**
+
+**Fase 0 — Mockups interactivos**
+
+0. `feature/mockups-interactivos` — scaffold `/frontend` (Vite+React+router), los 3 portales completos con `api/mock/` (fixtures + reglas RN-03/RN-04 simuladas), login mock por rol. Sin backend, sin Docker. Entregable: demo clickeable completa para validar con el usuario.
+
+**Fase 1 — Implementación real**
 
 1. `feature/backend-scaffold` — estructura `/backend`, `schema.prisma`, migraciones (incluida la del trigger append-only), Docker + docker-compose + `.env.example`.
 2. `feature/auth-responsables` — login JWT, CRUD de `responsable`, bcrypt, middlewares `auth.jwt`/`roles.guard`.
@@ -153,13 +173,12 @@ Cada punto es una rama `feature/*` creada desde `dev`, con merge a `dev` y luego
 4. `feature/casos-gestion` — asignación, cambio de estado, respuesta oficial, cierre con validación RN-03.
 5. `feature/integraciones-externas` — clientes HTTP CRM-X/SALES-X/LOGISTI-X con timeout + circuit breaker.
 6. `feature/reportes` — endpoint de métricas agrupadas.
-7. `feature/frontend-cliente` — portal cliente completo.
-8. `feature/frontend-agente` — portal agente completo (dashboard, grilla, acciones).
-9. `feature/frontend-admin` — gestión de usuarios internos.
+7. `feature/frontend-conectar-api` — se implementa `api/http.ts`, se apaga el flag de mock, se cablea JWT real; la UI de la Fase 0 no se reescribe.
 
 ## Verificación end-to-end
 
-- `docker-compose up` levanta Postgres + backend + frontend.
+- **Fase 0 (mockups):** `npm run dev` en `/frontend` con `VITE_USE_MOCK_API=true`. Flujo manual: radicar como Cliente → login Agente → asignar → cambiar estado → intentar cerrar sin respuesta (debe bloquearlo el mock) → responder → cerrar → Cliente ve la respuesta. Todo sin Docker/Postgres.
+- **Fase 1 (real):** `docker-compose up` levanta Postgres + backend + frontend.
 - `npx prisma migrate dev` aplica schema + trigger append-only; verificar manualmente con un `UPDATE historial_atencion ...` que la DB lo rechace.
 - Backend: `npm test` (jest + supertest) cubriendo el flujo crítico: crear caso → asignar → cambiar estado → intentar cerrar sin respuesta (debe dar 400 con el mensaje del SDD §5.3) → responder → cerrar (200) → intentar reabrir/editar (debe fallar).
 - Frontend: flujo manual en navegador — radicar como Cliente, iniciar sesión como Agente, gestionar el caso hasta cierre, confirmar que el Cliente ve la respuesta final.
