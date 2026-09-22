@@ -103,15 +103,56 @@ export const mockApi = {
     return caso
   },
 
-  async listarCasos({ clienteId, estado, tipoSolicitud, texto } = {}) {
+  async listarCasos({ clienteId, estado, tipoSolicitud, texto, fecha } = {}) {
     await delay()
     const db = loadDb()
     return db.casos
       .filter((c) => !clienteId || c.clienteId === clienteId)
       .filter((c) => !estado || c.estadoAtencion === estado)
       .filter((c) => !tipoSolicitud || c.tipoSolicitud === tipoSolicitud)
+      .filter((c) => !fecha || c.fechaCreacion.slice(0, 10) === fecha)
       .filter((c) => !texto || c.casoId.toLowerCase().includes(texto.toLowerCase()))
+      .map((c) => {
+        const cliente = db.clientes.find((cl) => cl.clienteId === c.clienteId)
+        return { ...c, clienteNombre: cliente ? cliente.nombreCompleto : '—' }
+      })
       .sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion))
+  },
+
+  async listarClientes() {
+    await delay()
+    const db = loadDb()
+    return db.clientes
+  },
+
+  // ---- Historial global (RF 4.0, caso de uso independiente de 3.0) ----
+  async listarHistorial({ clienteId, fecha, estado, tipoSolicitud, texto } = {}) {
+    await delay()
+    const db = loadDb()
+    const porCaso = new Map()
+    for (const h of [...db.historial].sort((a, b) => new Date(a.fechaRegistro) - new Date(b.fechaRegistro))) {
+      const anterior = porCaso.get(h.casoId) || 'Radicado'
+      porCaso.set(h.casoId, h.estadoNuevo)
+      h._estadoAnterior = anterior
+    }
+    return db.historial
+      .map((h) => {
+        const caso = db.casos.find((c) => c.casoId === h.casoId)
+        const responsable = db.responsables.find((r) => r.responsableId === h.usuarioId)
+        return {
+          ...h,
+          estadoAnterior: h._estadoAnterior,
+          tipoSolicitud: caso ? caso.tipoSolicitud : '',
+          casoClienteId: caso ? caso.clienteId : null,
+          responsableNombre: responsable ? responsable.nombre : (h.usuarioId.startsWith('c-') ? 'Cliente' : h.usuarioId),
+        }
+      })
+      .filter((h) => !clienteId || h.casoClienteId === clienteId)
+      .filter((h) => !fecha || h.fechaRegistro.slice(0, 10) === fecha)
+      .filter((h) => !estado || h.estadoNuevo === estado)
+      .filter((h) => !tipoSolicitud || h.tipoSolicitud === tipoSolicitud)
+      .filter((h) => !texto || h.casoId.toLowerCase().includes(texto.toLowerCase()))
+      .sort((a, b) => new Date(b.fechaRegistro) - new Date(a.fechaRegistro))
   },
 
   async obtenerCaso(casoId) {

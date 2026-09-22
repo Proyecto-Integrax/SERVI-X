@@ -5,15 +5,18 @@ const NAV_BY_ROL = {
   Cliente: [
     { to: '/cliente/radicar', label: 'Radicar PQRS' },
     { to: '/cliente/mis-solicitudes', label: 'Mis Solicitudes' },
+    { to: '/cliente/historial', label: 'Historial' },
   ],
   Agente: [
     { to: '/agente/panel', label: 'Panel de Control' },
     { to: '/agente/casos', label: 'PQR' },
+    { to: '/agente/historial', label: 'Historial' },
     { to: '/agente/reportes', label: 'Informes' },
   ],
   Administrador: [
     { to: '/agente/panel', label: 'Panel de Control' },
     { to: '/agente/casos', label: 'PQR' },
+    { to: '/agente/historial', label: 'Historial' },
     { to: '/agente/reportes', label: 'Informes' },
     { to: '/admin/responsables', label: 'Responsables' },
   ],
