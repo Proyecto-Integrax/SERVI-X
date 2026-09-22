@@ -10,6 +10,7 @@ import { DashboardPage } from './portals/agente/DashboardPage'
 import { CasosPage } from './portals/agente/CasosPage'
 import { CasoDetallePage } from './portals/agente/CasoDetallePage'
 import { ReportesPage } from './portals/agente/ReportesPage'
+import { HistorialPage } from './portals/agente/HistorialPage'
 import { ResponsablesPage } from './admin/ResponsablesPage'
 
 function Home() {
@@ -36,6 +37,9 @@ export default function App() {
         <Route path="/cliente/solicitudes/:casoId" element={
           <RequireRole roles={['Cliente']}><DetalleSolicitudPage /></RequireRole>
         } />
+        <Route path="/cliente/historial" element={
+          <RequireRole roles={['Cliente']}><HistorialPage soloPropios /></RequireRole>
+        } />
 
         <Route path="/agente/panel" element={
           <RequireRole roles={['Agente', 'Administrador']}><DashboardPage /></RequireRole>
@@ -45,6 +49,9 @@ export default function App() {
         } />
         <Route path="/agente/casos/:casoId" element={
           <RequireRole roles={['Agente', 'Administrador']}><CasoDetallePage /></RequireRole>
+        } />
+        <Route path="/agente/historial" element={
+          <RequireRole roles={['Agente', 'Administrador']}><HistorialPage /></RequireRole>
         } />
         <Route path="/agente/reportes" element={
           <RequireRole roles={['Agente', 'Administrador']}><ReportesPage /></RequireRole>

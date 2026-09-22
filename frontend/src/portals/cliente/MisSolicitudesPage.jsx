@@ -9,13 +9,14 @@ export function MisSolicitudesPage() {
   const { session } = useAuth()
   const [casos, setCasos] = useState([])
   const [texto, setTexto] = useState('')
+  const [fecha, setFecha] = useState('')
   const [estado, setEstado] = useState('')
   const [tipoSolicitud, setTipoSolicitud] = useState('')
   const [loading, setLoading] = useState(true)
 
   async function cargar() {
     setLoading(true)
-    const data = await api.listarCasos({ clienteId: session.usuarioId, texto, estado, tipoSolicitud })
+    const data = await api.listarCasos({ clienteId: session.usuarioId, texto, fecha, estado, tipoSolicitud })
     setCasos(data)
     setLoading(false)
   }
@@ -28,6 +29,7 @@ export function MisSolicitudesPage() {
       <div className="panel">
         <div className="toolbar">
           <input type="text" placeholder="Buscar por numero de solicitud" value={texto} onChange={(e) => setTexto(e.target.value)} />
+          <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} title="Filtrar por fecha" />
           <select value={estado} onChange={(e) => setEstado(e.target.value)}>
             <option value="">Estado: Todos</option>
             {api.ESTADOS.map((e) => <option key={e} value={e}>{e}</option>)}
