@@ -2,6 +2,22 @@ import { prisma } from '../../config/prisma'
 import { ApiError } from '../../common/ApiError'
 import { AuthUser } from '../../middlewares/auth.jwt'
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+// casoId es columna uuid: Prisma rechaza con un 500 si se intenta filtrar con
+// texto que no sea un UUID valido. Para busqueda libre, solo se filtra por
+// casoId cuando el texto es un UUID completo; si no, se busca por cliente/descripcion.
+function textoCasoWhere(texto: string) {
+  const t = texto.trim()
+  if (!t) return undefined
+  const or: any[] = [
+    { descripcion: { contains: t, mode: 'insensitive' } },
+    { cliente: { nombreCompleto: { contains: t, mode: 'insensitive' } } },
+  ]
+  if (UUID_RE.test(t)) or.unshift({ casoId: { equals: t } })
+  return { OR: or }
+}
+
 function serializeCaso(caso: any) {
   return {
     casoId: caso.casoId,
@@ -60,7 +76,7 @@ export async function listarCasos(filtros: any, actor: AuthUser) {
   if (actor.rol === 'Cliente') where.clienteId = actor.usuarioId
   if (filtros.estado) where.estadoAtencion = filtros.estado
   if (filtros.tipoSolicitud) where.tipoSolicitud = filtros.tipoSolicitud
-  if (filtros.texto) where.casoId = { equals: filtros.texto }
+  if (filtros.texto) Object.assign(where, textoCasoWhere(filtros.texto))
   if (filtros.fecha) {
     const start = new Date(`${filtros.fecha}T00:00:00.000Z`)
     const end = new Date(`${filtros.fecha}T23:59:59.999Z`)
@@ -175,7 +191,16 @@ export async function listarHistorial(filtros: any, actor: AuthUser) {
   const where: any = {}
   if (actor.rol === 'Cliente') where.caso = { clienteId: actor.usuarioId }
   if (filtros.estado) where.estadoNuevo = filtros.estado
-  if (filtros.texto) where.casoId = filtros.texto
+  if (filtros.texto) {
+    const t = String(filtros.texto).trim()
+    where.OR = UUID_RE.test(t)
+      ? [{ casoId: { equals: t } }]
+      : [
+          { accionRealizada: { contains: t, mode: 'insensitive' } },
+          { caso: { descripcion: { contains: t, mode: 'insensitive' } } },
+          { caso: { cliente: { nombreCompleto: { contains: t, mode: 'insensitive' } } } },
+        ]
+  }
 
   const eventos = await prisma.historialAtencion.findMany({
     where, include: { caso: { include: { responsable: true } } }, orderBy: { fechaRegistro: 'desc' },

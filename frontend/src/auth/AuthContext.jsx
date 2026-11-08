@@ -2,11 +2,21 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const AuthContext = createContext(null)
 const SESSION_KEY = 'servix_session_v1'
+const useMock = import.meta.env.VITE_USE_MOCK_API !== 'false'
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(() => {
     const raw = localStorage.getItem(SESSION_KEY)
-    return raw ? JSON.parse(raw) : null
+    if (!raw) return null
+    const parsed = JSON.parse(raw)
+    // Si cambiamos de mock a API real (o viceversa), una sesion vieja sin el
+    // campo esperado para este modo rompe las llamadas; se descarta en vez
+    // de dejar al usuario "logueado" con una sesion invalida.
+    if (!useMock && !parsed.token) {
+      localStorage.removeItem(SESSION_KEY)
+      return null
+    }
+    return parsed
   })
 
   useEffect(() => {
