@@ -5,11 +5,13 @@ import { AppShell } from '../components/AppShell'
 export function ResponsablesPage() {
   const [responsables, setResponsables] = useState([])
   const [form, setForm] = useState({ nombre: '', email: '', rol: 'Agente', password: '' })
+  const [editId, setEditId] = useState(null)
+  const [editForm, setEditForm] = useState({ nombre: '', rol: 'Agente' })
   const [error, setError] = useState('')
   const [ok, setOk] = useState('')
 
   function cargar() {
-    api.listarResponsables().then(setResponsables)
+    api.listarResponsables({ incluirInactivos: true }).then(setResponsables)
   }
 
   useEffect(cargar, [])
@@ -29,6 +31,36 @@ export function ResponsablesPage() {
       cargar()
     } catch (err) {
       setError(err.message || 'No se pudo crear el responsable.')
+    }
+  }
+
+  function iniciarEdicion(r) {
+    setEditId(r.responsableId)
+    setEditForm({ nombre: r.nombre, rol: r.rol })
+  }
+
+  async function guardarEdicion(responsableId) {
+    setError('')
+    setOk('')
+    try {
+      await api.actualizarResponsable(responsableId, editForm)
+      setOk('Responsable actualizado.')
+      setEditId(null)
+      cargar()
+    } catch (err) {
+      setError(err.message || 'No se pudo actualizar el responsable.')
+    }
+  }
+
+  async function alternarActivo(r) {
+    setError('')
+    setOk('')
+    try {
+      if (r.activo) await api.eliminarResponsable(r.responsableId)
+      else await api.reactivarResponsable(r.responsableId)
+      cargar()
+    } catch (err) {
+      setError(err.message || 'No se pudo actualizar el estado.')
     }
   }
 
@@ -65,12 +97,43 @@ export function ResponsablesPage() {
         </div>
 
         <div className="panel">
-          <h3>Responsables activos</h3>
+          <h3>Responsables</h3>
           <table>
-            <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th></tr></thead>
+            <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr></thead>
             <tbody>
               {responsables.map((r) => (
-                <tr key={r.responsableId}><td>{r.nombre}</td><td>{r.email}</td><td>{r.rol}</td></tr>
+                <tr key={r.responsableId}>
+                  {editId === r.responsableId ? (
+                    <>
+                      <td><input value={editForm.nombre} onChange={(e) => setEditForm((f) => ({ ...f, nombre: e.target.value }))} /></td>
+                      <td>{r.email}</td>
+                      <td>
+                        <select value={editForm.rol} onChange={(e) => setEditForm((f) => ({ ...f, rol: e.target.value }))}>
+                          <option value="Agente">Agente</option>
+                          <option value="Administrador">Administrador</option>
+                        </select>
+                      </td>
+                      <td>{r.activo ? 'Activo' : 'Inactivo'}</td>
+                      <td>
+                        <button className="btn btn-primary" style={{ width: 'auto', marginRight: 6 }} onClick={() => guardarEdicion(r.responsableId)}>Guardar</button>
+                        <button className="btn btn-outline" onClick={() => setEditId(null)}>Cancelar</button>
+                      </td>
+                    </>
+                  ) : (
+                    <>
+                      <td>{r.nombre}</td>
+                      <td>{r.email}</td>
+                      <td>{r.rol}</td>
+                      <td>{r.activo ? 'Activo' : 'Inactivo'}</td>
+                      <td>
+                        <button className="btn btn-outline" style={{ marginRight: 6 }} onClick={() => iniciarEdicion(r)}>Editar</button>
+                        <button className={r.activo ? 'btn btn-danger' : 'btn btn-success'} onClick={() => alternarActivo(r)}>
+                          {r.activo ? 'Desactivar' : 'Reactivar'}
+                        </button>
+                      </td>
+                    </>
+                  )}
+                </tr>
               ))}
             </tbody>
           </table>

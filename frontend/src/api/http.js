@@ -65,12 +65,24 @@ export const httpApi = {
     return request('GET', `/casos/${casoId}/historial`)
   },
 
-  async listarResponsables() {
-    return request('GET', '/responsables')
+  async listarResponsables(filtros = {}) {
+    return request('GET', `/responsables${qs(filtros)}`)
   },
 
   async crearResponsable(data) {
     return request('POST', '/responsables', data)
+  },
+
+  async actualizarResponsable(responsableId, data) {
+    return request('PATCH', `/responsables/${responsableId}`, data)
+  },
+
+  async eliminarResponsable(responsableId) {
+    return request('DELETE', `/responsables/${responsableId}`)
+  },
+
+  async reactivarResponsable(responsableId) {
+    return request('PATCH', `/responsables/${responsableId}/reactivar`)
   },
 
   async asignarResponsable(casoId, responsableId) {

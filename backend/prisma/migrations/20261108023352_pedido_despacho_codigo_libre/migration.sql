@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "caso" ALTER COLUMN "pedido_id" SET DATA TYPE VARCHAR(100),
+ALTER COLUMN "despacho_id" SET DATA TYPE VARCHAR(100);

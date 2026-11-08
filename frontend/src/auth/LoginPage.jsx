@@ -51,11 +51,32 @@ export function LoginPage() {
         <div className="link-row">
           Eres cliente y no tienes cuenta? <Link to="/registro">Registrate aqui</Link>
         </div>
-        <p className="hint-banner" style={{ marginTop: 16 }}>
-          Mock demo: prueba con juan.perez@example.com (Cliente), luis.ramirez@servix.local (Agente)
-          o carla.mendez@servix.local (Administrador) — cualquier contrasena funciona en esta fase.
-        </p>
+        <div className="hint-banner" style={{ marginTop: 16 }}>
+          <strong>Credenciales de prueba</strong> (contrasena: <code>Clave123*</code>)
+          <table style={{ width: '100%', marginTop: 8, fontSize: 13 }}>
+            <tbody>
+              {DEMO_USERS.map((u) => (
+                <tr key={u.email}>
+                  <td style={{ padding: '2px 0' }}>{u.rol}</td>
+                  <td style={{ padding: '2px 0' }}>{u.email}</td>
+                  <td style={{ padding: '2px 0', textAlign: 'right' }}>
+                    <button type="button" className="btn btn-outline" style={{ padding: '2px 8px', fontSize: 12 }}
+                      onClick={() => { setEmail(u.email); setPassword('Clave123*') }}>
+                      Usar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
 }
+
+const DEMO_USERS = [
+  { rol: 'Cliente', email: 'juan.perez@example.com' },
+  { rol: 'Agente', email: 'luis.ramirez@servix.local' },
+  { rol: 'Administrador', email: 'carla.mendez@servix.local' },
+]
