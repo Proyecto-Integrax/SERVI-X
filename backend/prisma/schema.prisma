@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  Agente
+  Administrador
+}
+
+model Cliente {
+  clienteId       String   @id @default(uuid()) @map("cliente_id") @db.Uuid
+  nombreCompleto  String   @map("nombre_completo") @db.VarChar(150)
+  tipoDocumento   String   @map("tipo_documento") @db.VarChar(50)
+  numeroDocumento String   @map("numero_documento") @db.VarChar(50)
+  email           String   @unique @db.VarChar(100)
+  passwordHash    String   @map("password_hash") @db.VarChar(255)
+  fechaCreacion   DateTime @default(now()) @map("fecha_creacion") @db.Timestamptz
+
+  casos Caso[]
+
+  @@map("cliente")
+}
+
+model Responsable {
+  responsableId   String   @id @default(uuid()) @map("responsable_id") @db.Uuid
+  nombreCompleto  String   @map("nombre_completo") @db.VarChar(150)
+  correoCorporativo String @unique @map("correo_corporativo") @db.VarChar(100)
+  passwordHash    String   @map("password_hash") @db.VarChar(255)
+  rolOperativo    Rol      @map("rol_operativo")
+  estadoActivo    Boolean  @default(true) @map("estado_activo")
+
+  casosAsignados Caso[]
+
+  @@map("responsable")
+}
+
+model Caso {
+  casoId         String    @id @default(uuid()) @map("caso_id") @db.Uuid
+  clienteId      String    @map("cliente_id") @db.Uuid
+  pedidoId       String?   @map("pedido_id") @db.Uuid
+  despachoId     String?   @map("despacho_id") @db.Uuid
+  tipoSolicitud  String    @map("tipo_solicitud") @db.VarChar(50)
+  descripcion    String
+  estadoAtencion String    @default("Radicado") @map("estado_atencion") @db.VarChar(50)
+  responsableId  String?   @map("responsable_id") @db.Uuid
+  fechaCreacion  DateTime  @default(now()) @map("fecha_creacion") @db.Timestamptz
+  fechaCierre    DateTime? @map("fecha_cierre") @db.Timestamptz
+
+  cliente     Cliente             @relation(fields: [clienteId], references: [clienteId])
+  responsable Responsable?        @relation(fields: [responsableId], references: [responsableId])
+  historial   HistorialAtencion[]
+
+  @@map("caso")
+}
+
+model HistorialAtencion {
+  historialId     String   @id @default(uuid()) @map("historial_id") @db.Uuid
+  casoId          String   @map("caso_id") @db.Uuid
+  estadoAnterior  String?  @map("estado_anterior") @db.VarChar(50)
+  estadoNuevo     String   @map("estado_nuevo") @db.VarChar(50)
+  accionRealizada String   @map("accion_realizada")
+  usuarioAccionId String   @map("usuario_accion_id") @db.Uuid
+  accion          String   @db.VarChar(50)
+  fechaRegistro   DateTime @default(now()) @map("fecha_registro") @db.Timestamptz
+
+  caso Caso @relation(fields: [casoId], references: [casoId])
+
+  @@map("historial_atencion")
+}
