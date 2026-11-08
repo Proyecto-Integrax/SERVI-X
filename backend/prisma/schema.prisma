@@ -42,8 +42,8 @@ model Responsable {
 model Caso {
   casoId         String    @id @default(uuid()) @map("caso_id") @db.Uuid
   clienteId      String    @map("cliente_id") @db.Uuid
-  pedidoId       String?   @map("pedido_id") @db.Uuid
-  despachoId     String?   @map("despacho_id") @db.Uuid
+  pedidoId       String?   @map("pedido_id") @db.VarChar(100)
+  despachoId     String?   @map("despacho_id") @db.VarChar(100)
   tipoSolicitud  String    @map("tipo_solicitud") @db.VarChar(50)
   descripcion    String
   estadoAtencion String    @default("Radicado") @map("estado_atencion") @db.VarChar(50)

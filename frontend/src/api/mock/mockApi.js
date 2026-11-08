@@ -170,10 +170,41 @@ export const mockApi = {
     return { caso, cliente, responsable, pedido, despacho, historial: eventos }
   },
 
-  async listarResponsables() {
+  async listarResponsables({ incluirInactivos } = {}) {
     await delay()
     const db = loadDb()
-    return db.responsables.filter((r) => r.activo)
+    return incluirInactivos ? db.responsables : db.responsables.filter((r) => r.activo)
+  },
+
+  async actualizarResponsable(responsableId, { nombre, rol }) {
+    await delay()
+    const db = loadDb()
+    const responsable = db.responsables.find((r) => r.responsableId === responsableId)
+    if (!responsable) throw new ApiError(404, 'Responsable no encontrado.')
+    if (nombre) responsable.nombre = nombre
+    if (rol) responsable.rol = rol
+    saveDb(db)
+    return responsable
+  },
+
+  async eliminarResponsable(responsableId) {
+    await delay()
+    const db = loadDb()
+    const responsable = db.responsables.find((r) => r.responsableId === responsableId)
+    if (!responsable) throw new ApiError(404, 'Responsable no encontrado.')
+    responsable.activo = false
+    saveDb(db)
+    return responsable
+  },
+
+  async reactivarResponsable(responsableId) {
+    await delay()
+    const db = loadDb()
+    const responsable = db.responsables.find((r) => r.responsableId === responsableId)
+    if (!responsable) throw new ApiError(404, 'Responsable no encontrado.')
+    responsable.activo = true
+    saveDb(db)
+    return responsable
   },
 
   async crearResponsable({ nombre, email, rol, password }) {
