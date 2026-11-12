@@ -37,7 +37,7 @@ export function DetalleSolicitudPage() {
 
           <h3>Respuesta oficial</h3>
           {respuesta ? (
-            <p>{respuesta.observacion}</p>
+            <p>{respuesta.accionRealizada}</p>
           ) : (
             <p className="hint-banner">Tu caso aun esta en gestion. Aqui veras la respuesta oficial cuando este disponible.</p>
           )}

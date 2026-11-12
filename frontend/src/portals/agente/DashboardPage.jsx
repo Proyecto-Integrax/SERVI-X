@@ -21,10 +21,9 @@ export function DashboardPage() {
         <div className="panel">
           <h3>Resumen del Estado de PQR</h3>
           <div className="grid-2">
-            <div><strong>Peticiones:</strong> {porTipo('Peticion')}</div>
-            <div><strong>Quejas:</strong> {porTipo('Queja')}</div>
-            <div><strong>Reclamos:</strong> {porTipo('Reclamo')}</div>
-            <div><strong>Sugerencias:</strong> {porTipo('Sugerencia')}</div>
+            {api.TIPOS_SOLICITUD.map((tipo) => (
+              <div key={tipo}><strong>{tipo}:</strong> {porTipo(tipo)}</div>
+            ))}
           </div>
           <p style={{ marginTop: 16 }}>
             <strong>Abiertos:</strong> {abiertos.length} &nbsp;·&nbsp; <strong>Cerrados:</strong> {cerrados.length}
