@@ -5,7 +5,9 @@ function nextId(prefix) {
   return `${prefix}-${String(seq++).padStart(4, '0')}`
 }
 
-export const TIPOS_SOLICITUD = ['Peticion', 'Queja', 'Reclamo', 'Sugerencia', 'Felicitacion']
+// Tipologia exacta exigida por UC-05/HU-05 del documento: Peticion, Queja,
+// Reclamo, Solicitud, Felicitacion, Observacion.
+export const TIPOS_SOLICITUD = ['Peticion', 'Queja', 'Reclamo', 'Solicitud', 'Felicitacion', 'Observacion']
 
 export const ESTADOS = ['Radicado', 'En Revision', 'En Proceso', 'Cerrado']
 
@@ -66,13 +68,13 @@ export const casos = [
 ]
 
 export const historial = [
-  { historialId: nextId('H'), casoId: 'PQR001', accion: 'Creacion', estadoNuevo: 'Radicado', observacion: 'Caso radicado por el cliente.', usuarioId: 'c-0001', fechaRegistro: '2026-09-10T10:00:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR001', accion: 'Asignacion', estadoNuevo: 'Radicado', observacion: 'Asignado a Luis Ramirez.', usuarioId: 'r-admin-1', fechaRegistro: '2026-09-10T10:30:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR001', accion: 'CambioEstado', estadoNuevo: 'En Proceso', observacion: 'Se inicia revision con el operador logistico.', usuarioId: 'r-agente-1', fechaRegistro: '2026-09-10T11:15:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR002', accion: 'Creacion', estadoNuevo: 'Radicado', observacion: 'Caso radicado por el cliente.', usuarioId: 'c-0002', fechaRegistro: '2026-09-05T09:30:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR002', accion: 'RespuestaOficial', estadoNuevo: 'En Proceso', observacion: 'Ofrecemos disculpas por la demora, se refuerza el equipo de atencion.', usuarioId: 'r-agente-2', fechaRegistro: '2026-09-06T08:00:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR002', accion: 'Cierre', estadoNuevo: 'Cerrado', observacion: 'Caso resuelto y comunicado al cliente.', usuarioId: 'r-agente-2', fechaRegistro: '2026-09-06T08:05:00Z' },
-  { historialId: nextId('H'), casoId: 'PQR003', accion: 'Creacion', estadoNuevo: 'Radicado', observacion: 'Caso radicado por el cliente.', usuarioId: 'c-0003', fechaRegistro: '2026-09-15T14:00:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR001', accion: 'Creacion', estadoNuevo: 'Radicado', accionRealizada: 'Caso radicado por el cliente.', usuarioAccionId: 'c-0001', fechaRegistro: '2026-09-10T10:00:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR001', accion: 'Asignacion', estadoNuevo: 'Radicado', accionRealizada: 'Asignado a Luis Ramirez.', usuarioAccionId: 'r-admin-1', fechaRegistro: '2026-09-10T10:30:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR001', accion: 'CambioEstado', estadoNuevo: 'En Proceso', accionRealizada: 'Se inicia revision con el operador logistico.', usuarioAccionId: 'r-agente-1', fechaRegistro: '2026-09-10T11:15:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR002', accion: 'Creacion', estadoNuevo: 'Radicado', accionRealizada: 'Caso radicado por el cliente.', usuarioAccionId: 'c-0002', fechaRegistro: '2026-09-05T09:30:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR002', accion: 'RespuestaOficial', estadoNuevo: 'En Proceso', accionRealizada: 'Ofrecemos disculpas por la demora, se refuerza el equipo de atencion.', usuarioAccionId: 'r-agente-2', fechaRegistro: '2026-09-06T08:00:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR002', accion: 'Cierre', estadoNuevo: 'Cerrado', accionRealizada: 'Caso resuelto y comunicado al cliente.', usuarioAccionId: 'r-agente-2', fechaRegistro: '2026-09-06T08:05:00Z' },
+  { historialId: nextId('H'), casoId: 'PQR003', accion: 'Creacion', estadoNuevo: 'Radicado', accionRealizada: 'Caso radicado por el cliente.', usuarioAccionId: 'c-0003', fechaRegistro: '2026-09-15T14:00:00Z' },
 ]
 
 export function genCasoId() {

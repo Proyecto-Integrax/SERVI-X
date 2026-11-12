@@ -3,7 +3,8 @@
 // para que ningun componente de pagina tenga que cambiar al pasar de mock a real.
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1'
-const TIPOS_SOLICITUD = ['Peticion', 'Queja', 'Reclamo', 'Sugerencia', 'Felicitacion']
+// Tipologia exacta exigida por UC-05/HU-05 del documento.
+const TIPOS_SOLICITUD = ['Peticion', 'Queja', 'Reclamo', 'Solicitud', 'Felicitacion', 'Observacion']
 const ESTADOS = ['Radicado', 'En Revision', 'En Proceso', 'Cerrado']
 
 function getToken() {
