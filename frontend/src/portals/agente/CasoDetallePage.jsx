@@ -145,7 +145,7 @@ export function CasoDetallePage() {
             {historial.map((h) => (
               <li key={h.historialId}>
                 <div className="titulo">{ACCION_LABEL[h.accion] || h.accion}</div>
-                <div className="meta">{h.observacion}</div>
+                <div className="meta">{h.accionRealizada}</div>
                 <div className="meta">{new Date(h.fechaRegistro).toLocaleString()}</div>
               </li>
             ))}

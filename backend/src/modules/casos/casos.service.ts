@@ -34,6 +34,8 @@ function serializeCaso(caso: any) {
   }
 }
 
+// Nombres de campo literales exigidos por HU-04: estadoAnterior, estadoNuevo,
+// accionRealizada, usuarioAccionId, fechaRegistro.
 function serializeHistorial(h: any) {
   return {
     historialId: h.historialId,
@@ -41,8 +43,8 @@ function serializeHistorial(h: any) {
     accion: h.accion,
     estadoAnterior: h.estadoAnterior,
     estadoNuevo: h.estadoNuevo,
-    observacion: h.accionRealizada,
-    usuarioId: h.usuarioAccionId,
+    accionRealizada: h.accionRealizada,
+    usuarioAccionId: h.usuarioAccionId,
     fechaRegistro: h.fechaRegistro,
   }
 }

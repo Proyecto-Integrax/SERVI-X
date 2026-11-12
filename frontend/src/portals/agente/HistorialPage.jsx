@@ -60,7 +60,7 @@ export function HistorialPage({ soloPropios = false }) {
                   <td>{h.accion}</td>
                   <td>{h.estadoAnterior}</td>
                   <td>{h.estadoNuevo}</td>
-                  <td>{h.observacion}</td>
+                  <td>{h.accionRealizada}</td>
                   <td>{new Date(h.fechaRegistro).toLocaleString()}</td>
                   <td><Link className="btn btn-outline" to={`${detalleBase}/${h.casoId}`}>Ver detalles</Link></td>
                 </tr>

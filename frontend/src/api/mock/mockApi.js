@@ -95,8 +95,8 @@ export const mockApi = {
       casoId,
       accion: 'Creacion',
       estadoNuevo: 'Radicado',
-      observacion: 'Caso radicado.',
-      usuarioId: actor.usuarioId,
+      accionRealizada: 'Caso radicado.',
+      usuarioAccionId: actor.usuarioId,
       fechaRegistro: nowIso(),
     })
     saveDb(db)
@@ -138,13 +138,13 @@ export const mockApi = {
     return db.historial
       .map((h) => {
         const caso = db.casos.find((c) => c.casoId === h.casoId)
-        const responsable = db.responsables.find((r) => r.responsableId === h.usuarioId)
+        const responsable = db.responsables.find((r) => r.responsableId === h.usuarioAccionId)
         return {
           ...h,
           estadoAnterior: h._estadoAnterior,
           tipoSolicitud: caso ? caso.tipoSolicitud : '',
           casoClienteId: caso ? caso.clienteId : null,
-          responsableNombre: responsable ? responsable.nombre : (h.usuarioId.startsWith('c-') ? 'Cliente' : h.usuarioId),
+          responsableNombre: responsable ? responsable.nombre : (h.usuarioAccionId.startsWith('c-') ? 'Cliente' : h.usuarioAccionId),
         }
       })
       .filter((h) => !clienteId || h.casoClienteId === clienteId)
@@ -234,8 +234,8 @@ export const mockApi = {
       casoId,
       accion: 'Asignacion',
       estadoNuevo: caso.estadoAtencion,
-      observacion: `Asignado a ${responsable ? responsable.nombre : responsableId}.`,
-      usuarioId: actor.usuarioId,
+      accionRealizada: `Asignado a ${responsable ? responsable.nombre : responsableId}.`,
+      usuarioAccionId: actor.usuarioId,
       fechaRegistro: nowIso(),
     })
     saveDb(db)
@@ -255,8 +255,8 @@ export const mockApi = {
       casoId,
       accion: 'CambioEstado',
       estadoNuevo: estadoAtencion,
-      observacion,
-      usuarioId: actor.usuarioId,
+      accionRealizada: observacion,
+      usuarioAccionId: actor.usuarioId,
       fechaRegistro: nowIso(),
     })
     saveDb(db)
@@ -275,8 +275,8 @@ export const mockApi = {
       casoId,
       accion: 'RespuestaOficial',
       estadoNuevo: caso.estadoAtencion,
-      observacion: texto,
-      usuarioId: actor.usuarioId,
+      accionRealizada: texto,
+      usuarioAccionId: actor.usuarioId,
       fechaRegistro: nowIso(),
     })
     saveDb(db)
@@ -300,8 +300,8 @@ export const mockApi = {
       casoId,
       accion: 'Cierre',
       estadoNuevo: 'Cerrado',
-      observacion: 'Caso cerrado.',
-      usuarioId: actor.usuarioId,
+      accionRealizada: 'Caso cerrado.',
+      usuarioAccionId: actor.usuarioId,
       fechaRegistro: nowIso(),
     })
     saveDb(db)
